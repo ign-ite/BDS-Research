@@ -1,0 +1,15 @@
+Experiment,Variant,Mean Return,Mean Cost,Adherence %,Overhead Ratio
+Ext 1 (BSS),fixed_cost,12.2125,37.958067129532814,0.0,1.0
+Ext 1 (BSS),fixed_balanced,16.7935,43.782999201287986,0.0,1.0
+Ext 1 (BSS),bayesian_w*,22.7475,53.37921752228921,0.0,1.0
+Ext 2 (Pricing),Rainbow-static,,43.2505,,1.0
+Ext 2 (Pricing),Rainbow-spot,,40.672557508393766,,1.0
+Ext 2 (Pricing),FIFO-spot,,95.0,,1.0
+Ext 3 (Batching),B=1,,,,1.0
+Ext 3 (Batching),B=2,,,,0.5580661743192497
+Ext 3 (Batching),B=4,,,,0.36570538007405906
+Ext 3 (Batching),B=8,,,,0.2564143803222406
+Ext 4 (Transfer),scratch,22.792,55.71116690163433,,
+Ext 4 (Transfer),transfer_frozen,12.358,32.22519616294905,,
+Ext 4 (Transfer),transfer_finetune,13.42,35.14383896166652,,
+Ext 4 (Transfer),FIFO-v2,,14.997100273885913,,

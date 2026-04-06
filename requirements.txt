@@ -1,0 +1,8 @@
+matplotlib
+tensorflow
+tf-agents
+tensorflow-probability
+numpy
+pandas
+seaborn
+bokeh

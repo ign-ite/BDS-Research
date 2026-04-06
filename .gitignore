@@ -1,0 +1,24 @@
+# Virtual environment
+/venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Large generated training output
+output/
+
+# OS / editor junk
+.DS_Store
+.idea/
+.vscode/
+
+# Secrets
+.env
+
+# Large binaries
+*.pdf
+
+# Generated aggregation output
+aggregation_output.txt

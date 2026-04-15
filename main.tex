@@ -1,0 +1,71 @@
+\documentclass[12pt]{Thesis}
+
+\usepackage{float}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{url}
+
+\thesistitle{Enhancing Spark Job Scheduling Using Distributional Deep Reinforcement Learning: Extensions to Verma et al. (2025)}
+\degree{Bachelor of Technology in Artificial Intelligence and Data Science}
+\authors{[YOUR NAME]\\Roll No: [YOUR ROLL NO]}
+
+\begin{document}
+
+\frontmatter
+\maketitle
+
+\chapter*{Evaluation Sheet}
+\addcontentsline{toc}{chapter}{Evaluation Sheet}
+\begin{center}
+\textbf{Indian Institute of Information Technology Design and Manufacturing Kurnool}\\
+\textbf{Department of CSE / AI \& Data Science}\\[1em]
+\textbf{B.Tech Final Review Report Evaluation Sheet}
+\end{center}
+
+\noindent\textbf{Title of the Project:} Enhancing Spark Job Scheduling Using Distributional Deep Reinforcement Learning: Extensions to Verma et al. (2025)\\
+\textbf{Student Name:} [YOUR NAME]\\
+\textbf{Roll Number:} [YOUR ROLL NO]\\
+\textbf{Guide:} [YOUR GUIDE NAME]\\
+\textbf{Academic Year:} 2024--2025\\
+\textbf{Course:} Big Data Systems (BDS)
+
+\vspace{2em}
+\noindent\textbf{Examiner-I Signature:} \hrulefill\\[2em]
+\textbf{Examiner-II Signature:} \hrulefill\\[2em]
+\textbf{Supervisor Signature:} \hrulefill\\[2em]
+\textbf{Head of the Department Signature:} \hrulefill
+
+\chapter*{Declaration}
+\addcontentsline{toc}{chapter}{Declaration}
+I hereby declare that the project report titled \emph{``Enhancing Spark Job Scheduling Using Distributional Deep Reinforcement Learning: Extensions to Verma et al. (2025)''} submitted in partial fulfillment of the requirements for the award of the degree of Bachelor of Technology in Artificial Intelligence and Data Science at IIITDM Kurnool is a record of original work carried out by me under the supervision of \textbf{[YOUR GUIDE NAME]}. I further declare that this work has not been submitted either in part or in full to any other institution or university for the award of any degree, diploma, or certificate. All sources of information used in this report have been properly acknowledged through citations and references.
+
+\vspace{2em}
+\noindent\textbf{Place:} Kurnool \hfill \textbf{Signature of the Student:} \hrulefill\\[1em]
+\textbf{Date:} \hrulefill \hfill \textbf{Name:} [YOUR NAME]
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+Modern cloud platforms run large data-processing applications where many jobs compete for limited computing resources. Apache Spark is a popular big-data engine, but its scheduling decisions often face uncertainty from changing workloads and fluctuating virtual machine prices. This project extends the reinforcement-learning scheduler proposed by Verma et al. (2025) by introducing four improvements: BSS reward optimization, stochastic VM pricing awareness, job batching, and transfer learning. The core decision model uses distributional deep reinforcement learning, specifically C51, which predicts a full distribution of possible future outcomes instead of a single average value. This design makes scheduling decisions more stable under uncertainty. Experimental analysis in a Spark--YARN simulation shows meaningful gains in completion time, utilization, and cost efficiency, while transfer learning reduces adaptation effort for new workload conditions. The study demonstrates that combining uncertainty-aware learning with practical systems extensions can produce a scheduler that is both performance-focused and cost-aware. The report is written for technical and non-technical readers by explaining each concept in plain language and connecting results to real operational impact.
+
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+I sincerely thank my project guide, \textbf{[YOUR GUIDE NAME]}, for continuous guidance, thoughtful feedback, and encouragement throughout this work. I am grateful to the faculty members of the Department of CSE / AI \& Data Science, IIITDM Kurnool, for providing a strong academic foundation and a supportive research environment. I also thank my classmates and peers for helpful technical discussions during experimentation and report preparation. Finally, I express heartfelt gratitude to my family for their patience, motivation, and unwavering support during the entire duration of this project.
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\mainmatter
+\input{chap_1}
+\input{chap_2}
+\input{chap_3}
+\input{chap_4}
+\input{chap_5}
+\input{chap_6}
+
+\bibliographystyle{IEEEtran}
+\bibliography{Bibliography}
+
+\end{document}

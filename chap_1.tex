@@ -1,0 +1,57 @@
+\chapter{Introduction}
+\lhead{CHAPTER 1. INTRODUCTION}
+\label{chap:introduction}
+
+\section{Background}
+Apache Spark is a powerful engine that processes huge amounts of data across many computers simultaneously, which is called \emph{distributed processing} \cite{zaharia2016spark}. A simple analogy is a large group project: instead of one person solving the full assignment, many students solve different parts in parallel and then combine results. In Spark, each part is a \emph{task}, and many tasks form a \emph{job}. Spark usually runs with YARN (Yet Another Resource Negotiator), the system that allocates memory and processing slots across machines, similar to how a school timetable allocates classrooms to courses \cite{vavilapalli2013apache}.
+
+Job scheduling means deciding \emph{which job should run where and when}. This matters because poor scheduling can increase waiting time, waste expensive cloud resources, and delay business insights. In cloud systems, even small scheduling inefficiencies can multiply into high operational cost at scale \cite{mao2016resource}. Traditional schedulers such as First-In-First-Out (FIFO) are easy to understand but cannot adapt well to changing workload patterns \cite{schedsurvey2016}.
+
+Verma et al. (2025) proposed using deep reinforcement learning (RL) for Spark scheduling. Reinforcement learning is a trial-and-error learning method in which a software agent learns decisions by receiving rewards for good actions and penalties for bad ones \cite{sutton2018rl}. Their contribution showed that learned scheduling policies can outperform hand-crafted rules in dynamic environments. However, real deployments still include practical challenges not fully addressed in the base work: noisy reward signals, fluctuating virtual machine prices, scheduling overhead at high job volume, and the need to adapt quickly to new workload distributions. These limitations motivate the four extensions studied in this report.
+
+\section{Problem Statement}
+In practical Spark clusters, the scheduler must simultaneously manage performance and cost under uncertainty. Existing policies may complete jobs quickly but overspend cloud budget, or reduce cost but increase queue delays and total completion time. This trade-off becomes difficult when workload intensity, VM availability, and VM prices change over time \cite{spot2013deconstructing}.
+
+Let the set of incoming jobs be:
+\[
+J = \{j_1, j_2, \ldots, j_n\}
+\]
+and the available virtual machines (VMs) be:
+\[
+V = \{v_1, v_2, \ldots, v_m\}.
+\]
+
+Let $T_{\max}$ denote the \emph{makespan}, which is the total time to finish all jobs. Let $C(J,V)$ denote total execution cost over all assigned jobs and VMs. Let $R_t$ denote the reinforcement learning reward at decision step $t$.
+
+The scheduling objective is formulated as:
+\[
+\min\; \alpha T_{\max} + \beta C(J,V)
+\]
+where $\alpha, \beta > 0$ are balancing coefficients chosen according to system priorities.
+
+At each time step, the RL agent observes the cluster state, chooses a job-to-VM allocation action, receives reward $R_t$, and updates its policy to improve long-term performance. The key problem is to design a scheduler that achieves lower makespan and lower cost together while remaining robust to uncertainty.
+
+\section{Objectives of the Study}
+The objectives of this study are listed below:
+\begin{enumerate}
+    \item To design and evaluate \textbf{BSS Reward Optimization} that improves reward shaping and balances efficiency with resource wastage penalties.
+    \item To integrate \textbf{Stochastic VM Pricing} so that scheduling decisions account for dynamic cloud cost variations.
+    \item To implement \textbf{Job Batching} to reduce per-decision scheduling overhead and improve throughput.
+    \item To apply \textbf{Transfer Learning} that reuses pre-trained policy knowledge across workload changes and reduces retraining time.
+\end{enumerate}
+
+\section{Scope of the Project}
+The project includes simulation-based evaluation of Apache Spark style workloads, YARN-like resource allocation behavior, cloud VM models, and a distributional deep RL scheduler based on C51 \cite{bellemare2017distributional}. It includes baseline scheduler comparison and extension-wise ablation analysis.
+
+The project excludes full production deployment on a live enterprise cluster and excludes billing through real cloud provider invoices. Instead, it uses realistic simulation assumptions and representative pricing distributions to evaluate decision quality in a controlled and reproducible environment.
+
+\section{Organization of the Report}
+The report is organized as follows:
+\begin{itemize}
+    \item \textbf{Chapter 1} introduces the project context, problem, objectives, and scope.
+    \item \textbf{Chapter 2} surveys related work and identifies research gaps motivating the proposed extensions.
+    \item \textbf{Chapter 3} explains the methodology, mathematical formulations, and algorithmic flow.
+    \item \textbf{Chapter 4} presents experimental setup, baseline comparison, and extension-wise results.
+    \item \textbf{Chapter 5} presents visualization placeholders and interpretation links for key trends.
+    \item \textbf{Chapter 6} concludes the work, summarizes contributions, and discusses future directions.
+\end{itemize}

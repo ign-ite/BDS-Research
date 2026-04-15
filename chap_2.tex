@@ -1,0 +1,57 @@
+\chapter{Literature Survey and Research Gaps}
+\lhead{CHAPTER 2. LITERATURE SURVEY AND RESEARCH GAPS}
+\label{chap:literature}
+
+\section{Overview of Related Work}
+\subsection{Apache Spark and YARN Job Scheduling}
+Apache Spark is an open-source distributed computing framework designed for large-scale data processing with in-memory computation, which improves speed for iterative workloads such as analytics and machine learning \cite{zaharia2016spark}. YARN, short for Yet Another Resource Negotiator, is the cluster resource manager in Hadoop ecosystems and acts like a central traffic controller that decides where applications run \cite{vavilapalli2013apache}. HDFS (Hadoop Distributed File System) is the storage layer that keeps big data across many machines, like splitting a large library across multiple shelves but tracking every book location centrally \cite{white2012hadoop}.
+
+Common schedulers in this ecosystem include FIFO, Fair Scheduler, and Capacity Scheduler. FIFO executes jobs in arrival order; it is simple but can cause long delays for short jobs when a large job arrives first. Fair Scheduler attempts to share resources equally across users or queues. Capacity Scheduler reserves predefined resource fractions for different organizations or teams. These methods are practical, but they rely on static policies and often cannot anticipate future load fluctuations \cite{schedsurvey2016}.
+
+\subsection{Reinforcement Learning for Resource Management}
+Reinforcement Learning (RL) is a method where an agent learns by interacting with an environment and receiving rewards, similar to training a dog with treats for correct behavior and no reward for mistakes \cite{sutton2018rl}. In systems optimization, the environment is the cluster, actions are resource assignments, and rewards encode desired behavior such as fast completion and low cost.
+
+DeepRM and related works showed that deep RL can outperform traditional heuristics in cluster scheduling by learning workload-specific decision patterns \cite{mao2016resource}. Later studies explored DQN variants and actor-critic methods for resource allocation, but many methods remain sensitive to reward design and state representation quality \cite{mao2019park}.
+
+\subsection{Distributional Reinforcement Learning}
+Standard value-based RL typically predicts a single expected future reward for each action. Distributional RL predicts a full probability distribution over possible future rewards \cite{bellemare2017distributional}. A plain analogy is weather forecasting: instead of predicting only one temperature (say, 30$^\circ$C), a distributional model says there is a probability of 28$^\circ$C, 30$^\circ$C, or 33$^\circ$C. This richer prediction helps decision-making under uncertainty.
+
+The C51 algorithm (Categorical DQN) represents return distributions using fixed support points (atoms) and learns the probability assigned to each atom \cite{bellemare2017distributional}. In uncertain scheduling contexts, this allows policies to be more robust than mean-only predictions.
+
+\subsection{Cloud VM Pricing Models}
+Cloud providers offer multiple pricing modes. \emph{On-demand instances} have stable pricing but are expensive. \emph{Spot instances} are cheaper but prices fluctuate and resources can be interrupted. Stochastic pricing models represent this uncertainty mathematically and are useful for cost-aware scheduling \cite{spot2013deconstructing}. Treating price as random rather than constant can improve practical decision quality in cloud-native schedulers.
+
+\subsection{Transfer Learning in RL}
+Transfer learning means reusing knowledge learned in one task to accelerate learning in another related task. In RL, this can involve initializing a new agent using pre-trained network layers from a previous environment \cite{taylor2009transfer}. The benefit is reduced training time and better sample efficiency. However, if source and target tasks differ significantly, negative transfer may occur, where transferred knowledge hurts performance temporarily.
+
+\section{Identified Research Gaps}
+Table~\ref{tab:research_gaps} summarizes key gaps identified from prior work.
+
+\renewcommand{\arraystretch}{1.15}
+\begin{table}[H]
+\centering
+\caption{Research gaps identified from the literature.}
+\label{tab:research_gaps}
+\begin{tabular}{|p{4.0cm}|p{10.0cm}|}
+\hline
+\textbf{Research Area} & \textbf{Identified Limitation/Gap} \\
+\hline
+Spark heuristic schedulers (FIFO/Fair/Capacity) & Policy rules are static and do not adapt well to rapidly varying workload composition or cost conditions \cite{schedsurvey2016}. \\
+\hline
+Standard DQN-based scheduling & Mean-value prediction can hide risk under uncertainty, causing unstable decisions in noisy environments \cite{bellemare2017distributional}. \\
+\hline
+Reward design in RL schedulers & Single-objective or weakly balanced rewards can bias behavior and fail to manage utilization-time-cost trade-offs \cite{sutton2018rl}. \\
+\hline
+Cloud VM cost modeling & Many studies assume deterministic VM prices, ignoring stochastic spot-price dynamics that affect real cloud expenditure \cite{spot2013deconstructing}. \\
+\hline
+Transfer learning for scheduling & Limited evidence on how pre-trained scheduling policies adapt across workload and topology changes without full retraining \cite{taylor2009transfer}. \\
+\hline
+Batch-aware scheduling & Insufficient exploration of workload batching as a pre-processing step to reduce scheduling overhead and improve throughput in RL loops \cite{mao2016resource}. \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Summary of Literature Review}
+The literature indicates strong progress in distributed frameworks and intelligent scheduling, but practical deployment constraints remain. Spark and YARN provide robust execution infrastructure, and RL methods demonstrate adaptive decision advantages over static heuristics \cite{zaharia2016spark,vavilapalli2013apache,mao2016resource}. However, prior studies often simplify cost signals, under-model uncertainty, or ignore transfer efficiency between workloads.
+
+These gaps directly motivate the four extensions in this report. BSS reward optimization addresses weak reward shaping, stochastic VM pricing addresses uncertain cloud costs, job batching targets overhead reduction, and transfer learning improves adaptation speed. Together, these directions seek a scheduler that is not only high-performing but also realistic and operationally useful for cloud-scale big data processing.

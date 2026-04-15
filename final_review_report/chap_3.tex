@@ -1,0 +1,104 @@
+\chapter{Methodology}
+\lhead{CHAPTER 3. METHODOLOGY}
+\label{chap:methodology}
+
+\section{Overview of the Proposed System}
+The proposed system combines a Spark--YARN inspired cluster simulator with a distributional deep reinforcement learning scheduler. The pipeline begins with workload ingestion, then constructs the scheduler state, performs policy-based action selection, executes allocations, collects rewards, and updates policy parameters in iterative training episodes \cite{sutton2018rl,bellemare2017distributional}. Conceptually, this is similar to training an operations manager in a virtual factory before deploying them to a real plant: safe experimentation happens first, and decisions improve over repeated feedback.
+
+The complete architecture is referenced in Figure~\ref{fig:system_architecture}. It includes workload generation, cluster state observation, C51 policy network, extension modules (reward optimization, pricing, batching, transfer), and metric logging.
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox[c][5cm][c]{0.92\textwidth}{\centering Placeholder for system block diagram}}
+\caption{System architecture of the proposed distributional deep RL-based Spark job scheduler.}
+\label{fig:system_architecture}
+\end{figure}
+
+\section{System Components}
+\subsection{Apache Spark + YARN Simulation Environment}
+The simulation environment models cluster behavior using VM capacities, job resource demands, waiting queues, and execution transitions. Spark jobs are represented as resource-demand vectors (CPU, memory, executor demand, duration), while YARN-like allocation logic enforces capacity constraints per VM \cite{vavilapalli2013apache}. At each decision step, the environment checks whether a selected VM can host a selected job; if yes, allocation proceeds, otherwise the agent receives a penalty for invalid or inefficient action.
+
+This simulation-first approach improves reproducibility and allows systematic stress testing across workload patterns without requiring a costly live cloud deployment.
+
+\subsection{Distributional RL Agent (C51)}
+The C51 agent observes state $s_t$, selects action $a_t$, receives reward $R_t$, and transitions to next state $s_{t+1}$. The state space includes queue length, VM availability, and current cost indicators. The action space is a mapping decision: assign job $j_i$ to VM $v_k$, or defer if placement is poor.
+
+Let the categorical support be:
+\[
+\mathcal{Z} = \{z_1, z_2, \ldots, z_N\}
+\]
+where $N$ is the number of atoms. The network predicts a probability mass function over this support for each action. The distributional Bellman target is projected onto fixed support using operator $\Pi$.
+
+The C51 optimization objective uses cross-entropy loss:
+\[
+\mathcal{L}(\theta) = -\sum_{i=1}^{N}\left(\Pi\mathcal{T}Z_{\theta^-}(s_t,a_t)\right)_i \log\left(Z_{\theta}(s_t,a_t)\right)_i
+\]
+where $\theta$ are online network parameters and $\theta^-$ are target-network parameters \cite{bellemare2017distributional}. In plain English, the model learns to make its predicted reward-distribution match a more accurate target-distribution computed from observed outcomes.
+
+\subsection{Extension 1: BSS Reward Optimization}
+The baseline reward in many schedulers tends to over-prioritize either time or cost. To reduce this imbalance, the reward is redesigned as:
+\[
+R_t = -\alpha\,\text{makespan}_t - \beta\,\text{waste}_t + \gamma\,\text{throughput}_t
+\]
+where makespan$_t$ is cumulative completion delay at step $t$, waste$_t$ measures under-utilized allocated resources, and throughput$_t$ captures useful completed work.
+
+Each term has intuitive meaning: the first discourages slow schedules, the second discourages resource waste, and the third rewards productive completion. BSS (Bayesian/Black-box Simplex Search style tuning) is then used to find weight combinations that improve long-horizon return under a fixed training budget.
+
+\subsection{Extension 2: Stochastic VM Pricing}
+Traditional deterministic pricing assumes fixed VM costs and can mislead scheduling policy in real clouds. We model VM price for machine $v_k$ at time $t$ as a random variable:
+\[
+P(v_k,t) \sim \mathcal{N}(\mu_k,\sigma_k^2)
+\]
+or other bounded stochastic process depending on configuration.
+
+The scheduler incorporates expected and observed price fluctuations into state features and reward penalties. This enables cost-aware action choices, such as delaying non-urgent jobs during temporary price spikes when quality-of-service constraints permit.
+
+\subsection{Extension 3: Job Batching}
+Instead of scheduling one job at a time, related jobs are grouped into batches:
+\[
+B = \{b_1,b_2,\ldots,b_q\}
+\]
+where each batch may group jobs by similar CPU-memory requirements, deadline class, or arrival locality. Batching reduces repetitive per-job decision overhead and improves throughput by improving queue handling efficiency.
+
+In simple terms, this is like handling customer requests in grouped service windows instead of restarting a full decision process for each individual request.
+
+\subsection{Extension 4: Transfer Learning}
+Transfer learning pre-trains an agent on source workload $W_1$ and adapts to target workload $W_2$. Lower network layers (feature extractors) are frozen initially to preserve learned representations, while higher decision layers are fine-tuned.
+
+Training-time comparison typically evaluates:
+\begin{itemize}
+    \item Scratch training on $W_2$
+    \item Transfer-frozen (frozen lower layers)
+    \item Transfer-finetune (gradually unfreezing layers)
+\end{itemize}
+
+This approach reduces retraining effort when workloads evolve, which is common in production systems.
+
+\section{Algorithmic Flow}
+\subsection{Algorithm 1: Distributional RL Scheduling Loop}
+The end-to-end scheduling loop is described below:
+\begin{enumerate}
+    \item Initialize environment, replay buffer, C51 online and target networks.
+    \item Reset environment and observe initial state $s_0$.
+    \item Select action $a_t$ using policy (e.g., $\epsilon$-greedy over distributional value estimates).
+    \item Execute action: assign $j_i$ to $v_k$ (or defer), then observe reward $R_t$ and next state $s_{t+1}$.
+    \item Store transition $(s_t,a_t,R_t,s_{t+1})$ in replay memory.
+    \item Sample mini-batch, compute projected target distribution, and update online network by minimizing C51 loss.
+    \item Periodically synchronize target network parameters.
+    \item Repeat Steps 3--7 until episode termination.
+    \item Log metrics: makespan, utilization, cost, throughput, and convergence indicators.
+\end{enumerate}
+
+\subsection{Algorithm 2: Job Batching Pre-Processing}
+Batch creation prior to scheduling is performed as follows:
+\begin{enumerate}
+    \item Collect pending jobs from the waiting queue.
+    \item Extract feature vectors (CPU, memory, duration, deadline class).
+    \item Compute similarity scores between jobs using normalized resource features.
+    \item Group jobs into batches of size $B$ by nearest similarity and arrival constraints.
+    \item Order batches by priority policy (deadline-first or arrival-first variants).
+    \item Pass batch summary and candidate jobs to scheduling agent as augmented state.
+    \item Update batches dynamically as new jobs arrive.
+\end{enumerate}
+
+The architecture in Figure~\ref{fig:system_architecture} and these two algorithms jointly define the full methodology used in this project.

@@ -1,0 +1,38 @@
+\chapter{Conclusion and Future Work}
+\lhead{CHAPTER 6. CONCLUSION AND FUTURE WORK}
+\label{chap:conclusion}
+
+\section{Conclusion}
+This project developed and evaluated a distributional deep reinforcement learning framework for Spark-style job scheduling under cloud uncertainty. The core model used C51, a distributional RL algorithm that predicts a full spread of possible future rewards instead of a single average. This is important because real scheduling environments are uncertain: job arrivals vary, VM availability changes, and prices fluctuate. A distribution-aware policy provides better decision resilience in such conditions \cite{bellemare2017distributional,sutton2018rl}.
+
+The work extended the base study of Verma et al. (2025) through four practical additions: BSS reward optimization, stochastic VM pricing awareness, job batching, and transfer learning. BSS improved reward-quality balance and strengthened policy learning. Stochastic pricing integration improved cost-aware decision timing. Batching reduced scheduling overhead and improved throughput. Transfer learning reduced adaptation effort when workload conditions changed. Together, these extensions converted a strong research prototype into a more deployment-relevant scheduling strategy.
+
+Quantitatively, the integrated method achieved representative improvements from the experimental analysis: makespan reduced from 1184 s (base style model) to 1032 s, utilization improved from 75.2\% to 82.3\%, and cost reduced from \$55.90 to \$40.67. Additional extension-level gains included up to 74\% overhead reduction via batching and around 1.5\(\times\) faster cost convergence under transfer-frozen adaptation settings. These outcomes indicate that uncertainty-aware RL, when combined with systems-level design enhancements, can produce practical efficiency gains relevant to real cloud operations.
+
+\section{Major Contributions}
+The major contributions of this work are:
+\begin{itemize}
+    \item Developed an end-to-end \textbf{distributional deep RL scheduling framework} for Spark--YARN style environments with multi-metric optimization.
+    \item Proposed \textbf{BSS Reward Optimization} to improve reward balancing among makespan, waste, and throughput objectives.
+    \item Integrated \textbf{Stochastic VM Pricing} into scheduler state and reward logic for dynamic cloud cost awareness.
+    \item Designed \textbf{Job Batching} pre-processing that reduces scheduling overhead and improves throughput.
+    \item Implemented \textbf{Transfer Learning} mechanisms for faster adaptation across workload and cluster variations.
+\end{itemize}
+
+\section{Future Work}
+\subsection{Real Cluster Deployment}
+A key next step is deployment on a live Spark cluster with real executor telemetry, queue contention, and operational constraints. This will allow validation of simulation findings against production behavior and measure true runtime reliability.
+
+\subsection{Multi-Objective Optimization}
+Future models can explicitly optimize a richer multi-objective frontier (latency, cost, energy, deadline adherence, fairness) using adaptive or preference-conditioned reward weighting. This can support user-specific service-level agreements in shared enterprise clusters.
+
+\subsection{Online Learning}
+Current experiments are primarily offline-training centric. Online learning extensions can continuously adapt the policy during operation using streaming feedback, while maintaining safety constraints to avoid unstable policy shifts.
+
+\subsection{Broader Workload Diversity}
+Future evaluation should include more heterogeneous workload traces (industry-like seasonal bursts, mixed short/long jobs, and cross-domain traces). Broader diversity improves confidence that learned policies generalize beyond a single benchmark profile.
+
+\section{Final Remarks}
+The project demonstrates that intelligent scheduling is not only an algorithmic challenge but also a systems-design challenge. A scheduler must consider uncertainty, cost behavior, and adaptation speed simultaneously. By introducing practical extensions over a strong base paper, this work shows how research ideas can move closer to operational relevance.
+
+For non-technical stakeholders, the practical takeaway is simple: smarter scheduling can make data platforms faster and cheaper at the same time. For technical researchers, the study highlights that distributional RL plus principled extensions is a promising direction for future cloud-native resource management research.
